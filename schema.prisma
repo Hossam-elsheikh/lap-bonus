@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+
+}
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model User {
+  id           String   @id @db.Uuid
+  referral_id  String?  @db.Uuid
+  referredBy   User?    @relation("UserReferrals", fields: [referral_id], references: [id])
+  referrals    User[]   @relation("UserReferrals")
+  name         String
+  phone        String
+  age          Int
+  gender       Gender   @default(MALE)
+  role         Role     @default(USER)
+  tier_id      Int
+  tier_restart_date Int   @default(dbgenerated("EXTRACT(YEAR FROM NOW())"))
+  points       Int      @default(0)
+  createdAt DateTime @default(now())
+
+  tier Tier @relation(fields: [tier_id], references: [id])
+  tests Test[]
+}
+
+model Tier {
+  id    Int    @id @default(autoincrement())
+  class String
+  title String
+  PCR   Int    // personal conversion rate
+  RCR   Int    // referral conversion rate
+
+  users User[]
+}
+
+model Type {
+  id    Int    @id @default(autoincrement())
+  title String
+
+  tests Test[]
+}
+
+model Test {
+  id       Int      @id @default(autoincrement())
+  notes    String
+  type_id  Int
+  user_id  String   @db.Uuid
+  createdAt DateTime @default(now())
+  cost     Int
+
+  type Type @relation(fields: [type_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+  documents Document[]
+}
+
+model Document {
+  id        Int      @id @default(autoincrement())
+  test_id   Int
+  filePath  String
+  fileName  String
+  mimeType  String
+  createdAt DateTime @default(now())
+
+  test Test @relation(fields: [test_id], references: [id])
+}
