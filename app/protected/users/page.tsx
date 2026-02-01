@@ -6,7 +6,7 @@ import { Suspense } from "react";
 
 async function UsersData() {
   const supabase = await createClient();
-  const { data: users } = await supabase.from("users").select();
+  const { data: users } = await supabase.from("user").select();
 
   return (
     <div className="space-y-4">

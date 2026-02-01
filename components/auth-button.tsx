@@ -23,9 +23,9 @@ export async function AuthButton() {
     );
   }
 
-  // Get user data from users table
+  // Get user data from user table
   const { data: userData, error } = await supabase
-    .from("users")
+    .from("user")
     .select("*")
     .eq("id", authUser.id)
     .single();
