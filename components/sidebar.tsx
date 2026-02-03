@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/lib/auth/hooks";
 import { hasRole } from "@/lib/auth/roles";
+import Image from "next/image";
 
 interface SidebarLink {
   label: string;
@@ -16,8 +18,13 @@ interface SidebarLink {
 
 const sidebarLinks: SidebarLink[] = [
   {
-    label: "Dashboard",
+    label: "Home",
     href: "/protected",
+    requiredRole: "user",
+  },
+  {
+    label: "My Dashboard",
+    href: "/protected/dashboard",
     requiredRole: "user",
   },
   {
@@ -26,8 +33,8 @@ const sidebarLinks: SidebarLink[] = [
     requiredRole: "admin",
   },
   {
-    label: "Admin Panel",
-    href: "/protected/admin",
+    label: "Tests",
+    href: "/protected/tests",
     requiredRole: "admin",
   },
   {
@@ -40,6 +47,7 @@ const sidebarLinks: SidebarLink[] = [
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { role, loading } = useUserRole();
+  const pathname = usePathname();
 
   // Filter links based on user role
   const visibleLinks = sidebarLinks.filter((link) => {
@@ -47,6 +55,14 @@ export function Sidebar() {
     if (!link.requiredRole) return true;
     return hasRole(role, link.requiredRole);
   });
+
+  // Check if a link is active
+  const isActive = (href: string) => {
+    if (href === "/protected") {
+      return pathname === href;
+    }
+    return pathname?.startsWith(href);
+  };
 
   return (
     <>
@@ -64,14 +80,14 @@ export function Sidebar() {
       <aside
         className={cn(
           "fixed left-0 top-0 z-40 h-screen w-64 bg-background border-r border-border transition-transform duration-300 md:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          isOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo/Brand */}
-          <div className="flex items-center justify-center h-16 border-b border-border px-4">
-            <Link href="/" className="font-bold text-lg">
-              Lap Bonus
+          <div className="flex items-center justify-center  border-b border-border px-4">
+            <Link href="/" className="font-bold text-lg py-6">
+              <Image src="/logo/logo-en.svg" alt="Logo" width={150} height={150} />
             </Link>
           </div>
 
@@ -82,7 +98,12 @@ export function Sidebar() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="block px-4 py-2 rounded-md hover:bg-accent transition-colors"
+                    className={cn(
+                      "block px-4 py-2 rounded-md transition-colors",
+                      isActive(link.href)
+                        ? "bg-accent font-semibold text-accent-foreground"
+                        : "hover:bg-accent/50",
+                    )}
                     onClick={() => setIsOpen(false)}
                   >
                     {link.label}
@@ -94,7 +115,13 @@ export function Sidebar() {
 
           {/* Footer */}
           <div className="border-t border-border p-4">
-            <a href="https://nojeed.me" target="_blank" className="text-xs text-muted-foreground">© 2026 Nojeed</a>
+            <a
+              href="https://nojeed.me"
+              target="_blank"
+              className="text-xs text-muted-foreground"
+            >
+              © 2026 Nojeed
+            </a>
           </div>
         </div>
       </aside>

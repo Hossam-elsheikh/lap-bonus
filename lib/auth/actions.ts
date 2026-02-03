@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 export interface CreateUserInput {
@@ -12,15 +12,24 @@ export interface CreateUserInput {
   password: string;
   name?: string;
   role?: "user" | "admin" | "superadmin";
+  phone: string;
+  age: number;
+  tier_id: number;
 }
 
 export async function createUserAction(input: CreateUserInput) {
   try {
     // Validate inputs
-    if (!input.email || !input.password) {
+    if (
+      !input.email ||
+      !input.password ||
+      !input.phone ||
+      input.age === undefined ||
+      input.tier_id === undefined
+    ) {
       return {
         success: false,
-        error: "Email and password are required",
+        error: "Email, password, phone, age, and tier ID are required",
       };
     }
 
@@ -43,26 +52,35 @@ export async function createUserAction(input: CreateUserInput) {
     console.log("Creating user with email:", input.email);
 
     // Create user in Auth
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: input.email,
-      password: input.password,
-      email_confirm: true,
-      user_metadata: {
-        role: input.role || "user",
-      },
-    });
+    const { data: authData, error: authError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: input.email,
+        password: input.password,
+        email_confirm: true,
+        user_metadata: {
+          role: input.role || "user",
+          name: input.name,
+          phone: input.phone,
+          age: input.age,
+          tier_id: input.tier_id,
+        },
+      });
 
     if (authError) {
       console.error("Auth creation error:", authError);
-      
+
       // Check if user already exists
-      if (authError.message.includes("already registered") || authError.message.includes("User already exists")) {
+      if (
+        authError.message.includes("already registered") ||
+        authError.message.includes("User already exists") ||
+        authError.message.includes("email_exists")
+      ) {
         return {
           success: false,
           error: "This email is already registered",
         };
       }
-      
+
       throw new Error(`Failed to create user in Auth: ${authError.message}`);
     }
 
@@ -76,18 +94,21 @@ export async function createUserAction(input: CreateUserInput) {
     const { error: dbError } = await supabaseAdmin.from("user").insert([
       {
         id: authData.user.id,
-        email: input.email,
+        // email: input.email,
         name: input.name || input.email.split("@")[0],
-        role: input.role || "user",
+        // role: input.role || "user",
+        phone: input.phone,
+        age: input.age,
+        tier_id: input.tier_id,
       },
     ]);
 
     if (dbError) {
       console.error("Database insertion error:", dbError);
-      
+
       // Try to delete the auth user if database insert fails
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
-      
+
       throw new Error(`Failed to create user profile: ${dbError.message}`);
     }
 
@@ -101,7 +122,8 @@ export async function createUserAction(input: CreateUserInput) {
       },
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Failed to create user";
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to create user";
     console.error("createUserAction error:", errorMessage);
     return {
       success: false,

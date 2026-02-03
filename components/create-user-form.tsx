@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createUserAction } from "@/lib/auth/actions";
+import { useUserRole } from "@/lib/auth/hooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,9 +22,13 @@ import {
 } from "@/components/ui/select";
 
 export function CreateUserForm() {
+  const { role: currentUserRole } = useUserRole();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [age, setAge] = useState("");
+  const [tierId, setTierId] = useState("1");
   const [role, setRole] = useState<"user" | "admin" | "superadmin">("user");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -41,6 +46,9 @@ export function CreateUserForm() {
       password,
       name,
       role,
+      phone,
+      age: parseInt(age),
+      tier_id: parseInt(tierId),
     });
 
     if (result.success) {
@@ -52,6 +60,9 @@ export function CreateUserForm() {
       setEmail("");
       setPassword("");
       setName("");
+      setPhone("");
+      setAge("");
+      setTierId("1");
       setRole("user");
     } else {
       setMessage({
@@ -107,6 +118,44 @@ export function CreateUserForm() {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="+1234567890"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="age">Age</Label>
+              <Input
+                id="age"
+                type="number"
+                placeholder="25"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="tierId">Tier ID</Label>
+              <Input
+                id="tierId"
+                type="number"
+                placeholder="1"
+                value={tierId}
+                onChange={(e) => setTierId(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
             <Select value={role} onValueChange={(value: any) => setRole(value)}>
               <SelectTrigger>
@@ -114,8 +163,12 @@ export function CreateUserForm() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="user">User</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="superadmin">Superadmin</SelectItem>
+                {currentUserRole === "superadmin" && (
+                  <>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="superadmin">Superadmin</SelectItem>
+                  </>
+                )}
               </SelectContent>
             </Select>
           </div>
