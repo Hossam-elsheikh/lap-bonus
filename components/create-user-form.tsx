@@ -20,8 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslations } from "next-intl";
 
 export function CreateUserForm() {
+  const t = useTranslations("CreateUserForm");
   const { role: currentUserRole } = useUserRole();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,7 +56,7 @@ export function CreateUserForm() {
     if (result.success) {
       setMessage({
         type: "success",
-        text: `User ${result.user?.email} created successfully!`,
+        text: t("messages.success", { email: result.user?.email || "" }),
       });
       // Reset form
       setEmail("");
@@ -67,7 +69,7 @@ export function CreateUserForm() {
     } else {
       setMessage({
         type: "error",
-        text: result.error || "Failed to create user",
+        text: result.error || t("messages.error"),
       });
     }
 
@@ -77,17 +79,17 @@ export function CreateUserForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Create New User</CardTitle>
-        <CardDescription>Add a new user to the system</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="user@example.com"
+              placeholder={t("email_placeholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -95,11 +97,11 @@ export function CreateUserForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("password")}</Label>
             <Input
               id="password"
               type="password"
-              placeholder="••••••••"
+              placeholder={t("password_placeholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -107,22 +109,22 @@ export function CreateUserForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name">Name (Optional)</Label>
+            <Label htmlFor="name">{t("name")}</Label>
             <Input
               id="name"
               type="text"
-              placeholder="John Doe"
+              placeholder={t("name_placeholder")}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">{t("phone")}</Label>
             <Input
               id="phone"
               type="tel"
-              placeholder="+1234567890"
+              placeholder={t("phone_placeholder")}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
@@ -131,11 +133,11 @@ export function CreateUserForm() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="age">Age</Label>
+              <Label htmlFor="age">{t("age")}</Label>
               <Input
                 id="age"
                 type="number"
-                placeholder="25"
+                placeholder={t("age_placeholder")}
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 required
@@ -143,11 +145,11 @@ export function CreateUserForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tierId">Tier ID</Label>
+              <Label htmlFor="tierId">{t("tier_id")}</Label>
               <Input
                 id="tierId"
                 type="number"
-                placeholder="1"
+                placeholder={t("tier_id_placeholder")}
                 value={tierId}
                 onChange={(e) => setTierId(e.target.value)}
                 required
@@ -156,17 +158,19 @@ export function CreateUserForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="role">Role</Label>
+            <Label htmlFor="role">{t("role")}</Label>
             <Select value={role} onValueChange={(value: any) => setRole(value)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="user">User</SelectItem>
+                <SelectItem value="user">{t("roles.user")}</SelectItem>
                 {currentUserRole === "superadmin" && (
                   <>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="superadmin">Superadmin</SelectItem>
+                    <SelectItem value="admin">{t("roles.admin")}</SelectItem>
+                    <SelectItem value="superadmin">
+                      {t("roles.superadmin")}
+                    </SelectItem>
                   </>
                 )}
               </SelectContent>
@@ -186,7 +190,7 @@ export function CreateUserForm() {
           )}
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Creating..." : "Create User"}
+            {loading ? t("loading") : t("submit")}
           </Button>
         </form>
       </CardContent>

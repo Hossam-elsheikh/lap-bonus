@@ -47,15 +47,25 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getSession();
   const user = data.session?.user;
 
+  const pathname = request.nextUrl.pathname;
+  const isAuthPage =
+    pathname.match(/\/(ar|en)\/(login|auth|sign-up)/) ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/sign-up");
+
   if (
-    request.nextUrl.pathname !== "/" &&
     !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
+    !isAuthPage &&
+    pathname !== "/" &&
+    !pathname.match(/^\/(ar|en)$/)
   ) {
-    // no user, potentially respond by redirecting the user to the login page
+    // Determine locale from path or default to 'ar'
+    const localeMatch = pathname.match(/^\/(ar|en)/);
+    const locale = localeMatch ? localeMatch[1] : "ar";
+
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = `/${locale}/auth/login`;
     return NextResponse.redirect(url);
   }
 

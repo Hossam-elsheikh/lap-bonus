@@ -81,62 +81,38 @@ export async function addTestResult(input: CreateTestInput) {
     // Get the file path
     const filePath = uploadData.path;
 
-    // Insert test record into test table with file_path
-    const { error: insertError } = await supabaseAdmin.from("test").insert([
+    // 4. Call the RPC to handle database updates in a transaction
+    const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc(
+      "process_test_result",
       {
-        user_id: input.user_id,
-        type_id: input.type_id,
-        file_path: filePath,
-        cost: input.cost,
-        notes: input.notes,
-        createdAt: input.createdAt,
+        p_user_id: input.user_id,
+        p_type_id: input.type_id,
+        p_file_path: filePath,
+        p_cost: input.cost,
+        p_notes: input.notes,
+        p_created_at: input.createdAt,
       },
-    ]);
+    );
 
-    if (insertError) {
-      console.error("Error creating test record:", insertError);
+    if (rpcError || !rpcData?.success) {
+      console.error(
+        "Error in process_test_result RPC:",
+        rpcError || rpcData?.error,
+      );
       // Try to clean up the uploaded file
       await supabaseAdmin.storage.from("results").remove([fileName]);
-      return { success: false, error: insertError.message };
-    }
-
-    // Calculate and add points to user
-    // Formula: points = points + (cost / tier.pcr)
-
-    // 1. Fetch user's current points and tier_id (we already have user_id)
-    const { data: userPointsData, error: userPointsError } = await supabaseAdmin
-      .from("user")
-      .select("points, tier_id")
-      .eq("id", input.user_id)
-      .single();
-
-    if (!userPointsError && userPointsData && userPointsData.tier_id) {
-      // 2. Fetch tier's PCR
-      const { data: tierData, error: tierError } = await supabaseAdmin
-        .from("tier")
-        .select("pcr")
-        .eq("id", userPointsData.tier_id)
-        .single();
-
-      if (!tierError && tierData && tierData.pcr) {
-        // 3. Calculate points
-        // Assuming pcr is a number. If pcr is 10 (10%), logic is cost / 10?
-        // User request: "divided by the pcr percentage"
-        // We will use standard division.
-        // Points to add = Cost / PCR
-        const pointsToAdd = input.cost / tierData.pcr;
-        const newPoints = (userPointsData.points || 0) + pointsToAdd;
-
-        // 4. Update user points
-        await supabaseAdmin
-          .from("user")
-          .update({ points: newPoints })
-          .eq("id", input.user_id);
-      }
+      return {
+        success: false,
+        error: rpcError?.message || rpcData?.error || "Transaction failed",
+      };
     }
 
     revalidatePath("/protected/admin/tests");
-    return { success: true };
+    return {
+      success: true,
+      tierUpgraded: rpcData.tier_upgraded,
+      pointsAdded: rpcData.points_added,
+    };
   } catch (error) {
     console.error("Unexpected error:", error);
     return { success: false, error: "An unexpected error occurred" };

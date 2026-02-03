@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/routing";
 import { getCurrentUserRole } from "@/lib/auth/server";
 import { UserRole, hasRole } from "@/lib/auth/roles";
 
@@ -19,7 +19,7 @@ export async function ProtectedRoute({
   const userRole = await getCurrentUserRole();
 
   if (!userRole || !hasRole(userRole, requiredRole)) {
-    redirect("/auth/error?error=Unauthorized");
+    redirect({ href: "/auth/error?error=Unauthorized", locale: "ar" }); // fallback locale or logic to get current
   }
 
   return <>{children}</>;

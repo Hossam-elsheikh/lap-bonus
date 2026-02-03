@@ -1,0 +1,289 @@
+{
+  "HomePage": {
+    "title": "Welcome",
+    "description": "This is a translated app"
+  },
+  "Navbar": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "tests": "Tests"
+  },
+  "Sidebar": {
+    "home": "Home",
+    "dashboard": "My Profile",
+    "users": "Users",
+    "tests": "Tests",
+    "settings": "Settings",
+    "logo_alt": "System Logo"
+  },
+  "LanguageSwitcher": {
+    "label": "Language",
+    "ar": "العربية",
+    "en": "English"
+  },
+  "Auth": {
+    "login": {
+      "title": "Login",
+      "description": "Enter your email below to login to your account",
+      "email": "Email",
+      "password": "Password",
+      "forgot_password": "Forgot your password?",
+      "submit": "Login",
+      "loading": "Logging in...",
+      "no_account": "Don't have an account?",
+      "sign_up_link": "Sign up"
+    },
+    "signup": {
+      "title": "Sign Up",
+      "description": "Enter your details below to create an account",
+      "name": "Full Name",
+      "phone": "Phone Number",
+      "age": "Age",
+      "tier": "Tier",
+      "submit": "Create Account",
+      "loading": "Creating...",
+      "have_account": "Already have an account?",
+      "login_link": "Login"
+    }
+  },
+  "Dashboard": {
+    "title": "My Dashboard",
+    "description": "View your tier level, details, and test results history",
+    "tier_card": {
+      "title": "Current Tier",
+      "pcr": "Personal Conversion Rate",
+      "rcr": "Referral Conversion Rate"
+    },
+    "user_details": {
+      "title": "User Details",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "age": "Age"
+    },
+    "test_results": {
+      "title": "Test Results History",
+      "description": "Your test results will appear here",
+      "showing": "Showing {count} of {total} total results",
+      "no_results": "No test results found",
+      "table": {
+        "test_name": "Test Name",
+        "score": "Score",
+        "status": "Status",
+        "duration": "Duration",
+        "date": "Date",
+        "min": "min"
+      },
+      "status": {
+        "passed": "Passed",
+        "failed": "Failed",
+        "pending": "Pending"
+      },
+      "pagination": {
+        "page": "Page {current} of {total}",
+        "previous": "Previous",
+        "next": "Next"
+      }
+    },
+    "loading": {
+      "unable_to_load": "Unable to load user data"
+    }
+  },
+  "Users": {
+    "title": "User Management",
+    "description": "Manage all users in the system",
+    "add_new": "Add New User",
+    "table": {
+      "title": "All Users",
+      "total_users": "{count} total users",
+      "name": "Name",
+      "phone": "Phone",
+      "age": "Age",
+      "gender": "Gender",
+      "tier": "Tier",
+      "points": "Points",
+      "no_tier": "No Tier",
+      "no_users": "No users found"
+    },
+    "loading": "Loading users...",
+    "pagination": {
+      "page": "Page {current} of {total}",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "create": {
+      "back": "Back to Users",
+      "title": "Add New User",
+      "description": "Create a new user account"
+    },
+    "profile": {
+      "back": "Back to Users",
+      "title": "User Profile",
+      "description": "View and manage user information",
+      "personal_info": "Personal Information",
+      "name": "Name",
+      "phone": "Phone",
+      "age": "Age",
+      "gender": "Gender",
+      "member_since": "Member Since",
+      "tier_points": "Tier & Points",
+      "current_tier": "Current Tier",
+      "no_tier": "No Tier",
+      "pcr": "PCR (Personal)",
+      "rcr": "RCR (Referral)",
+      "total_points": "Total Points",
+      "test_history": "Test History",
+      "tests_completed": "{count} tests completed",
+      "test_type": "Test Type",
+      "cost": "Cost",
+      "notes": "Notes",
+      "date": "Date",
+      "no_tests": "No tests found for this user",
+      "unknown_type": "Unknown Type"
+    }
+  },
+  "CreateUserForm": {
+    "title": "Create New User",
+    "description": "Add a new user to the system",
+    "email": "Email",
+    "email_placeholder": "user@example.com",
+    "password": "Password",
+    "password_placeholder": "••••••••",
+    "name": "Name (Optional)",
+    "name_placeholder": "John Doe",
+    "phone": "Phone Number",
+    "phone_placeholder": "+1234567890",
+    "age": "Age",
+    "age_placeholder": "25",
+    "tier_id": "Tier ID",
+    "tier_id_placeholder": "1",
+    "role": "Role",
+    "roles": {
+      "user": "User",
+      "admin": "Admin",
+      "superadmin": "Superadmin"
+    },
+    "submit": "Create User",
+    "loading": "Creating...",
+    "messages": {
+      "success": "User {email} created successfully!",
+      "error": "Failed to create user"
+    }
+  },
+  "Tests": {
+    "title": "Test Management",
+    "description": "View and manage all user test results",
+    "add_new": "Add New Test",
+    "table": {
+      "title": "All Tests",
+      "description": "Manage and view test results",
+      "test_type": "Test Type",
+      "user": "User",
+      "cost": "Cost",
+      "file": "File",
+      "notes": "Notes",
+      "date": "Date",
+      "unknown_type": "Unknown Type",
+      "unknown_user": "Unknown User",
+      "no_file": "No file",
+      "no_tests": "No tests found matching your criteria"
+    },
+    "filters": {
+      "test_name": "Test Name",
+      "test_name_placeholder": "Filter by test name...",
+      "user": "User",
+      "user_placeholder": "Select user",
+      "all_users": "All Users",
+      "unnamed_user": "Unnamed User",
+      "date": "Date",
+      "apply": "Apply",
+      "clear": "Clear filters"
+    },
+    "create": {
+      "back": "Back to Tests",
+      "title": "Add Test Result",
+      "description": "Upload a test result PDF for a user",
+      "user": "User",
+      "user_placeholder": "Select user",
+      "test_type": "Test Type",
+      "test_type_placeholder": "Select test type",
+      "unnamed_type": "Unnamed Type",
+      "cost": "Cost",
+      "cost_placeholder": "100.00",
+      "notes": "Notes",
+      "notes_placeholder": "Add any notes about this test...",
+      "date_time": "Date & Time",
+      "pdf_file": "PDF File",
+      "selected": "Selected: {name} ({size} KB)",
+      "cancel": "Cancel",
+      "submit": "Create Test Result",
+      "submitting": "Creating...",
+      "errors": {
+        "pdf_only": "Only PDF files are allowed",
+        "select_user": "Please select a user",
+        "select_pdf": "Please select a PDF file",
+        "invalid_cost": "Please enter a valid cost",
+        "create_failed": "Failed to create test"
+      }
+    },
+    "loading": "Loading tests...",
+    "pagination": {
+      "page": "Page {current} of {total}",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "Settings": {
+    "title": "System Settings",
+    "description": "Configure system-wide settings",
+    "card_title": "Superadmin Only",
+    "your_role": "Your Role",
+    "only_superadmin": "Only superadmin users can access this page. Configure global settings here."
+  },
+  "AnalyticalDashboard": {
+    "title": "Analytics Overview",
+    "subtitle": "Welcome back! Here's what's happening today.",
+    "stats": {
+      "total_users": "Total Users",
+      "active_users": "Active platform users",
+      "tests_performed": "Tests Performed",
+      "total_tests": "Total tests submitted",
+      "points_distributed": "Points Distributed",
+      "total_rewards": "Total user rewards",
+      "total_revenue": "Total Revenue",
+      "last_30_days": "last 30 days"
+    },
+    "top_tests": {
+      "title": "Top Performed Tests",
+      "description": "The most popular test types across the platform.",
+      "no_tests": "No tests recorded yet."
+    },
+    "user_tiers": {
+      "title": "User Tiers",
+      "description": "Distribution of users across membership tiers.",
+      "no_users": "No users found."
+    },
+    "quick_access": {
+      "title": "Quick Access",
+      "manage_users": {
+        "title": "Manage Users",
+        "description": "View and manage detailed user profiles and permissions."
+      },
+      "all_tests": {
+        "title": "All Tests",
+        "description": "Browse the complete history of tests performed."
+      },
+      "platform_settings": {
+        "title": "Platform Settings",
+        "description": "Configure global settings and preferences."
+      },
+      "advanced_reports": {
+        "title": "Advanced Reports",
+        "description": "Deep dive analytics and PDF exports.",
+        "coming_soon": "COMING SOON"
+      }
+    }
+  }
+}

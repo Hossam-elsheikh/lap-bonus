@@ -6,44 +6,34 @@ import { UserRole } from "./roles";
  * Make sure your Supabase user has a 'role' custom claim set
  */
 export async function getCurrentUserRole(): Promise<UserRole | null> {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getSession();
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getSession();
 
-    if (!data.session?.user) {
-      return null;
-    }
-
-    // Get role from user's custom claims (if set in Supabase)
-    const role = (data.session.user.user_metadata?.role as UserRole) || "user";
-    return role;
-  } catch (error) {
-    console.error("Error getting user role:", error);
+  if (!data.session?.user) {
     return null;
   }
+
+  // Get role from user's custom claims (if set in Supabase)
+  const role = (data.session.user.user_metadata?.role as UserRole) || "user";
+  return role;
 }
 
 /**
  * Get current user with role
  */
 export async function getCurrentUser() {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getSession();
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getSession();
 
-    if (!data.session?.user) {
-      return null;
-    }
-
-    const role = (data.session.user.user_metadata?.role as UserRole) || "user";
-
-    return {
-      id: data.session.user.id,
-      email: data.session.user.email || "",
-      role,
-    };
-  } catch (error) {
-    console.error("Error getting current user:", error);
+  if (!data.session?.user) {
     return null;
   }
+
+  const role = (data.session.user.user_metadata?.role as UserRole) || "user";
+
+  return {
+    id: data.session.user.id,
+    email: data.session.user.email || "",
+    role,
+  };
 }

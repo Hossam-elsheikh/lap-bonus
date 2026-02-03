@@ -12,14 +12,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@/i18n/routing";
 import { useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const t = useTranslations("Auth.signup");
+  const locale = useLocale();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -36,7 +38,9 @@ export function SignUpForm({
     setError(null);
 
     if (password !== repeatPassword) {
-      setError("Passwords do not match");
+      setError(
+        locale === "ar" ? "كلمات المرور غير متطابقة" : "Passwords do not match",
+      );
       setIsLoading(false);
       return;
     }
@@ -46,7 +50,7 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/${locale}/protected`,
           data: {
             role: "user",
             phone: phone,
@@ -68,14 +72,16 @@ export function SignUpForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
+          <CardTitle className="text-2xl">{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">
+                  {locale === "ar" ? "البريد الإلكتروني" : "Email"}
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -87,7 +93,7 @@ export function SignUpForm({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{t("password")}</Label>
                 </div>
                 <Input
                   id="password"
@@ -99,7 +105,9 @@ export function SignUpForm({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="repeat-password">Repeat Password</Label>
+                  <Label htmlFor="repeat-password">
+                    {locale === "ar" ? "تكرار كلمة المرور" : "Repeat Password"}
+                  </Label>
                 </div>
                 <Input
                   id="repeat-password"
@@ -110,7 +118,7 @@ export function SignUpForm({
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone">{t("phone")}</Label>
                 <Input
                   id="phone"
                   type="tel"
@@ -121,7 +129,7 @@ export function SignUpForm({
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="age">Age</Label>
+                <Label htmlFor="age">{t("age")}</Label>
                 <Input
                   id="age"
                   type="number"
@@ -133,13 +141,13 @@ export function SignUpForm({
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
+                {isLoading ? t("loading") : t("submit")}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
+              {t("have_account")}{" "}
               <Link href="/auth/login" className="underline underline-offset-4">
-                Login
+                {t("login_link")}
               </Link>
             </div>
           </form>

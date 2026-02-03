@@ -1,44 +1,44 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/routing";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/lib/auth/hooks";
 import { hasRole } from "@/lib/auth/roles";
 import Image from "next/image";
+import { useTranslations, useLocale } from "next-intl";
 
 interface SidebarLink {
-  label: string;
+  labelKey: string;
   href: string;
   requiredRole?: "user" | "admin" | "superadmin";
 }
 
 const sidebarLinks: SidebarLink[] = [
   {
-    label: "Home",
+    labelKey: "home",
     href: "/protected",
-    requiredRole: "user",
+    requiredRole: "superadmin",
   },
   {
-    label: "My Dashboard",
+    labelKey: "dashboard",
     href: "/protected/dashboard",
     requiredRole: "user",
   },
   {
-    label: "Users",
+    labelKey: "users",
     href: "/protected/users",
     requiredRole: "admin",
   },
   {
-    label: "Tests",
+    labelKey: "tests",
     href: "/protected/tests",
     requiredRole: "admin",
   },
   {
-    label: "Settings",
+    labelKey: "settings",
     href: "/protected/settings",
     requiredRole: "superadmin",
   },
@@ -48,6 +48,8 @@ export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { role, loading } = useUserRole();
   const pathname = usePathname();
+  const t = useTranslations("Sidebar");
+  const locale = useLocale();
 
   // Filter links based on user role
   const visibleLinks = sidebarLinks.filter((link) => {
@@ -70,7 +72,7 @@ export function Sidebar() {
       <Button
         variant="ghost"
         size="icon"
-        className="md:hidden fixed top-4 left-4 z-50"
+        className="md:hidden fixed top-4 start-4 z-50"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -79,15 +81,21 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen w-64 bg-background border-r border-border transition-transform duration-300 md:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full",
+          "fixed start-0 top-0 z-40 h-screen w-64 bg-background border-e border-border transition-transform duration-300 md:translate-x-0 rtl:md:translate-x-0",
+          isOpen ? "translate-x-0" : "-translate-x-full rtl:translate-x-full",
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo/Brand */}
           <div className="flex items-center justify-center  border-b border-border px-4">
             <Link href="/" className="font-bold text-lg py-6">
-              <Image src="/logo/logo-en.svg" alt="Logo" width={150} height={150} />
+              <Image
+                src={`/logo/logo-${locale}.svg`}
+                alt={t("logo_alt")}
+                width={150}
+                height={150}
+                priority
+              />
             </Link>
           </div>
 
@@ -106,7 +114,7 @@ export function Sidebar() {
                     )}
                     onClick={() => setIsOpen(false)}
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
