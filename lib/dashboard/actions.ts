@@ -31,6 +31,63 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     console.error("Error fetching tests count:", testsError);
   }
 
+  // 4. Tier Distribution & Points Earned (Safe Join)
+  const { data: usersData, error: usersDataError } = await supabaseAdmin
+    .from("user")
+    .select("id, points, tier_id");
+
+  if (usersDataError) {
+    console.error("Error fetching users data:", usersDataError);
+  }
+
+  // Fetch all tiers to ensure we have names for all possible IDs
+  const { data: tiersData, error: tiersError } = await supabaseAdmin
+    .from("tier")
+    .select("id, title");
+
+  if (tiersError) {
+    console.error("Error fetching tiers:", tiersError);
+  }
+
+  let tierDistribution: { name: string; count: number }[] = [];
+  let pointsEarned = 0;
+
+  if (usersData) {
+    const tierMap = new Map<number, string>();
+    const tierCounts: Record<string, number> = {};
+
+    // Initialize map and counts with all tiers from database to ensure 0-count tiers are visible
+    if (tiersData) {
+      tiersData.forEach((t) => {
+        tierMap.set(Number(t.id), t.title);
+        tierCounts[t.title] = 0;
+      });
+    }
+
+    usersData.forEach((u) => {
+      // Aggregate total points
+      pointsEarned += u.points || 0;
+
+      const tierId = u.tier_id;
+      if (tierId) {
+        // Find tier name by ID (ensure key is treated as number)
+        const tierName = tierMap.get(Number(tierId));
+        if (tierName) {
+          tierCounts[tierName]++;
+        } else {
+          tierCounts["Unknown"] = (tierCounts["Unknown"] || 0) + 1;
+        }
+      } else {
+        tierCounts["Unknown"] = (tierCounts["Unknown"] || 0) + 1;
+      }
+    });
+
+    // Convert to array and sort by count DESC
+    tierDistribution = Object.entries(tierCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }
+
   // 3. Top 5 Tests Types (Safe Join)
   // Fetch all tests with type_id
   const { data: testsData, error: testsDataError } = await supabaseAdmin
@@ -81,45 +138,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
-  }
-
-  // 4. Tier Distribution & Points Earned (Safe Join)
-  const { data: usersData, error: usersDataError } = await supabaseAdmin
-    .from("user")
-    .select("id, points, tier_id");
-
-  // Fetch all tiers
-  const { data: tiersData, error: tiersError } = await supabaseAdmin
-    .from("tier")
-    .select("id, name");
-
-  let tierDistribution: { name: string; count: number }[] = [];
-  let pointsEarned = 0;
-
-  if (!usersDataError && usersData) {
-    const tierMap = new Map<number, string>();
-
-    if (tiersData) {
-      tiersData.forEach((t) => tierMap.set(t.id, t.name));
-    }
-
-    const tierCounts: Record<string, number> = {};
-
-    usersData.forEach((u) => {
-      pointsEarned += u.points || 0;
-
-      const tierId = u.tier_id;
-      // Handle possibility of tierId being null
-      let tierName = "Unknown";
-      if (tierId) {
-        tierName = tierMap.get(tierId) || "Unknown";
-      }
-      tierCounts[tierName] = (tierCounts[tierName] || 0) + 1;
-    });
-
-    tierDistribution = Object.entries(tierCounts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count);
   }
 
   return {

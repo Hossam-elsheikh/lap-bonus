@@ -32,7 +32,7 @@ export function AnalyticalDashboardView({ stats }: DashboardViewProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
       style: "currency",
-      currency: locale === "ar" ? "EGP" : "USD", // Example: adjust currency based on locale if needed
+      currency: "EGP",
     }).format(amount);
   };
 
